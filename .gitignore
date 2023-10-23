@@ -1,2 +1,2 @@
-/model/**
-*.joblib
+old.py
+/model/
