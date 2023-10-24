@@ -1,8 +1,6 @@
 import pandas as pd
-import numpy as np
 from service.paths import *
 from sys import argv
-from sklearn.ensemble import RandomForestRegressor
 from service.load import get_model
 from training.train_data import prep_test_X
 from datetime import datetime as dt
@@ -40,9 +38,7 @@ energy_set = pd.DataFrame(columns=["date", "predict"])
 predicts=[]
 dates=[]
 for day in forecast:
-    # print(day)
     energy = model.predict(day)
-    # print(energy)
     predicts.append(sum(energy))
     last_row = day.iloc[-1].name
     dates.append(dt.fromtimestamp(int(last_row.timestamp())).date())
