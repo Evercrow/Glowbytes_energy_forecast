@@ -25,10 +25,9 @@ def get_temp_forecast_by_24(df: pd.DataFrame):
 
     df['datetime'] = df.apply(lambda x: make_dt_col(x['date'], x['time']), axis=1)
     df.drop(["date",'weather_fact',"weather_pred"], inplace=True, axis=1)
-    # print(type(df))
     for i in range(0, len(df), 24):
         slice_end = min(i + 24, len(df))
-        result.append(prep_test_X(df.iloc[i:slice_end]) )
+        result.append(prep_test_X(df.iloc[i:slice_end]))
     return result
 
 
@@ -38,10 +37,14 @@ energy_set = pd.DataFrame(columns=["date", "predict"])
 predicts=[]
 dates=[]
 for day in forecast:
+    print(day)
     energy = model.predict(day)
     predicts.append(sum(energy))
-    last_row = day.iloc[-1].name
-    dates.append(dt.fromtimestamp(int(last_row.timestamp())).date())
+    last_row_dt = day.iloc[1].name
+    # print(last_row)
+    date_to_wr = dt.fromtimestamp(int(last_row_dt.timestamp())).date()
+    # print(date_to_wr)
+    dates.append(date_to_wr)
 energy_set["predict"] = predicts
 energy_set["date"] = dates
 energy_set.to_csv("result.csv", float_format='%.2f', mode='w',index=False)

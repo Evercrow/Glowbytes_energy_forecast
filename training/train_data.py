@@ -13,5 +13,4 @@ def prep_test_X(test_dataset: pd.DataFrame) -> pd.DataFrame:
     td = td.astype('float32')
 
     # test_dataset = test_dataset.apply(pd.to_numeric, errors='coerce')
-
     return td[['temp', 'time', 'temp_pred']]
