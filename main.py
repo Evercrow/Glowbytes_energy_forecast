@@ -4,7 +4,7 @@ from sys import argv
 from service.load import get_model
 from training.train_data import prep_test_X
 from datetime import datetime as dt
-
+from service.clean import prepare_raw
 if len(argv) > 1:
     new_data = path_to_data_dir / Path(argv[1])
     # run_feature_clean(new_data)
@@ -19,12 +19,7 @@ model = get_model()
 
 def get_temp_forecast_by_24(df: pd.DataFrame):
     result = []
-
-    def make_dt_col(row_date, row_time):
-        return pd.to_datetime(row_date) + pd.to_timedelta(row_time, unit='h')
-
-    df['datetime'] = df.apply(lambda x: make_dt_col(x['date'], x['time']), axis=1)
-    df.drop(["date",'weather_fact',"weather_pred"], inplace=True, axis=1)
+    df = prepare_raw(df,["date", 'weather_fact', "weather_pred"])
     for i in range(0, len(df), 24):
         slice_end = min(i + 24, len(df))
         result.append(prep_test_X(df.iloc[i:slice_end]))
@@ -37,7 +32,7 @@ energy_set = pd.DataFrame(columns=["date", "predict"])
 predicts=[]
 dates=[]
 for day in forecast:
-    print(day)
+    # print(day)
     energy = model.predict(day)
     predicts.append(sum(energy))
     last_row_dt = day.iloc[1].name
@@ -47,4 +42,5 @@ for day in forecast:
     dates.append(date_to_wr)
 energy_set["predict"] = predicts
 energy_set["date"] = dates
-energy_set.to_csv("result.csv", float_format='%.2f', mode='w',index=False)
+energy_set.to_csv(path_to_data_dir / Path("result.csv"), float_format='%.2f', mode='w',index=False)
+
